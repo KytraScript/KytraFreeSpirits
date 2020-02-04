@@ -417,13 +417,29 @@ body {
 .footer{
     display: flex;
     flex-direction: row;
+    font-family: 'Play', sans-serif;
     position: absolute;
+    align-items: center;
+    justify-content: space-around;
+    color: #222;
     bottom: 0;
     width: 1024px;
     height: 5vh;
     z-index: 10;
     background-color: ghostwhite;
     box-shadow: 0 -1px 4px black;
+}
+
+.hire-me{
+    margin-top: 6px;
+    text-align: center;
+    width: 90%;
+    height: 90%;
+    font-size: 13px;
+}
+
+.footer a{
+    text-decoration: none;
 }
 
 #login-forgot{
@@ -539,12 +555,17 @@ body {
 }
 
 #btn-remove-fav{
-    height: 16px;
-    width: 16px;
+    height: 14px;
+    width: 14px;
     position: absolute;
     top: 0;
     right: 0;
-    color: red;
+    color: #de5d83;
+}
+
+#btn-remove-fav:hover{
+    color: #f50000;
+    cursor: pointer;
 }
 
 #btn-paginate-prev{

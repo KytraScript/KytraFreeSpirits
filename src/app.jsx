@@ -48,8 +48,14 @@ class App extends React.Component {
     }
 
     UNSAFE_componentWillMount(){
+
         let favDrinks = window.localStorage.getItem('favoriteDrinks');
-        favDrinks = JSON.parse(favDrinks);
+        if(!favDrinks){
+            favDrinks = [];
+        } else {
+            favDrinks = JSON.parse(favDrinks);
+        }
+
         this.setState({
             favoriteDrinks: favDrinks
         }, () => {
@@ -128,7 +134,6 @@ class App extends React.Component {
         this.setState({
             userValue: e.target.value
         });
-        console.log(this.state.userValue);
     }
 
     createQueryString(str) {
@@ -153,7 +158,6 @@ class App extends React.Component {
                 query: textQuery
             })
             .then(function (response) {
-                console.log(response.data);
                 self.setState({
                     queryResults: response.data.drinks,
                     currentDrink: []
@@ -234,7 +238,6 @@ class App extends React.Component {
                 query: idQuery
             })
             .then(function (response) {
-                console.log(response.data);
                 if (!response.data.drinks.length) {
                     self.setState({
                         currentDrink: [],
@@ -288,9 +291,6 @@ class App extends React.Component {
                     });
                 })
                 .then(() => {
-                    console.log(this.state.drinkCategories);
-                })
-                .then(() => {
                     self.setState({
                         dataFocus: this.state.drinkCategories
                     });
@@ -319,9 +319,6 @@ class App extends React.Component {
                     });
                 })
                 .then(() => {
-                    console.log(this.state.drinkIngredients);
-                })
-                .then(() => {
                     self.setState({
                         dataFocus: this.state.drinkIngredients
                     });
@@ -348,9 +345,6 @@ class App extends React.Component {
                         currentDrink: [],
                         queryResults: []
                     });
-                })
-                .then(() => {
-                    console.log(this.state.drinkGlassware);
                 })
                 .then(() => {
                     self.setState({
@@ -405,7 +399,7 @@ class App extends React.Component {
             <HashRouter>
                 <div className={'container'}>
                     <div className={'nav-top'}>
-                        <div className={'nav-title'}>Free Spirits</div>
+                        <div className={'nav-title'}>Spirit Guide</div>
                         <div className={'nav-menu'}>
                             <div className={'nav-link'} id={'profile'}>
                                 <Link to="/">My Favorites</Link>
@@ -453,7 +447,10 @@ class App extends React.Component {
                             />
                         </Route>
                     </Switch>
-                    <div className={'footer'}></div>
+                    <div className={'footer'}>
+                        <span className={'hire-me'}>SpiritGuide is a React application created with love by Kytra Murphree.  Kytra is currently looking for employment as a Front-end Web Developer.
+                                                    Recruiters and Hiring Managers may contact her at kytrascript@gmail.com or via <a href={'http://www.linkedin.com/in/kytrascript'}>LinkedIn</a>.</span>
+                    </div>
                 </div>
             </HashRouter>
         );
