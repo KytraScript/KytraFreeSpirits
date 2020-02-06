@@ -34,8 +34,9 @@ class DrinkSearch extends React.Component {
                                 <div className={'search-option-name'}>By Glassware</div>
                             </div>
                         </div>
-                        <div className={'drink-details-viewer'}>
+                        <div className={this.props.loading ? 'whiteBck drink-details-viewer' : 'drink-details-viewer'}>
                             <SearchDisplay dataFocus={this.props.dataFocus}
+                                           loading={this.props.loading}
                                            glasswareQuery={this.props.glasswareQuery}
                                            categoryQuery={this.props.categoryQuery}
                                            ingredientQuery={this.props.ingredientQuery}

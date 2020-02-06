@@ -16,33 +16,33 @@ class SearchDisplay extends React.Component {
     render() {
         if (!this.props.queryResults.length && !this.props.currentDrink.idDrink) {
             return (
-                <div className={'data-points'}>
+                <div className={this.props.loading ? 'apiLoading' : 'data-points'}>
                     {this.props.dataFocus.map((e, index) => {
                         if (e.strGlass) {
-                            return <ResultCard result={e.strGlass} query={this.props.glasswareQuery} key={index}/>;
+                            return <ResultCard loading={this.props.loading} result={e.strGlass} query={this.props.glasswareQuery} key={index}/>;
                         } else if (e.strCategory) {
-                            return <ResultCard result={e.strCategory} query={this.props.categoryQuery} key={index}/>;
+                            return <ResultCard loading={this.props.loading} result={e.strCategory} query={this.props.categoryQuery} key={index}/>;
                         } else if (e.strIngredient1) {
-                            return <ResultCard result={e.strIngredient1} query={this.props.ingredientQuery} key={index}/>;
+                            return <ResultCard loading={this.props.loading} result={e.strIngredient1} query={this.props.ingredientQuery} key={index}/>;
                         } else if (e.letter) {
-                            return <ResultCard result={e.value} query={this.props.letterQuery} key={index}/>;
+                            return <ResultCard loading={this.props.loading} result={e.value} query={this.props.letterQuery} key={index}/>;
                         }
                     })}
                 </div>
             );
         } else if (this.props.currentDrink.idDrink) {
             return (
-                <div className={'data-points'}>
+                <div className={this.props.loading ? 'apiLoading' : 'data-points'}>
                     <div onClick={() => this.props.clearDrink()} title={'Back to Results'} id={'btn-return'}></div>
-                    <InstructionCard drink={this.props.currentDrink} addFavorite={this.props.addFavorite}/>
+                    <InstructionCard loading={this.props.loading} drink={this.props.currentDrink} addFavorite={this.props.addFavorite}/>
                 </div>
             );
         }
         else if (this.props.queryResults.length && !this.props.currentDrink.idDrink) {
             return (
-                <div className={'data-points-drinks'}>
+                <div className={this.props.loading ? 'apiLoading' : 'data-points-drinks'}>
                     {this.props.queryResults.map((e, index) => {
-                        return <DrinkCard drink={e} key={index} query={this.props.drinkIDQuery}/>;
+                        return <DrinkCard loading={this.props.loading} drink={e} key={index} query={this.props.drinkIDQuery}/>;
                     })}
                 </div>
             );

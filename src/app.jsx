@@ -13,6 +13,7 @@ class App extends React.Component {
         super(props);
 
         this.state = {
+            loading: false,
             userValue: '',
             userCreatedDrinks: {},
             favoriteDrinks: [],
@@ -47,10 +48,10 @@ class App extends React.Component {
         this.clearDrink = this.clearDrink.bind(this);
     }
 
-    UNSAFE_componentWillMount(){
+    UNSAFE_componentWillMount() {
 
         let favDrinks = window.localStorage.getItem('favoriteDrinks');
-        if(!favDrinks){
+        if (!favDrinks) {
             favDrinks = [];
         } else {
             favDrinks = JSON.parse(favDrinks);
@@ -62,8 +63,12 @@ class App extends React.Component {
             let pS = this.state.pageState;
             this.setState({
                 favSlice: this.state.favoriteDrinks.slice(((pS - 1) * 7), (pS * 7))
-            })
-        })
+            });
+        });
+    }
+
+    componentDidMount() {
+        document.querySelector('.loadingScreen').remove();
     }
 
     addFavorite(drinkID) {
@@ -91,16 +96,16 @@ class App extends React.Component {
             }, () => {
                 let favString = JSON.stringify(this.state.favoriteDrinks);
                 window.localStorage.setItem('favoriteDrinks', favString);
-            })
+            });
         });
     }
 
-    removeFavorite(drinkID){
+    removeFavorite(drinkID) {
         let favState = this.state.favoriteDrinks;
 
-        for(let i = 0; i < favState.length; i++){
-            if(favState[i].idDrink === drinkID){
-                favState.splice(i,1);
+        for (let i = 0; i < favState.length; i++) {
+            if (favState[i].idDrink === drinkID) {
+                favState.splice(i, 1);
             }
         }
 
@@ -113,8 +118,8 @@ class App extends React.Component {
             }, () => {
                 let favString = JSON.stringify(this.state.favoriteDrinks);
                 window.localStorage.setItem('favoriteDrinks', favString);
-            })
-        })
+            });
+        });
     }
 
     displayFavorite(eventID) {
@@ -154,18 +159,23 @@ class App extends React.Component {
         let self = this;
         let textQuery = event.currentTarget.textContent;
         textQuery = this.createQueryString(textQuery);
-        axios.post('http://localhost:5170/findByCategory', {
-                query: textQuery
-            })
-            .then(function (response) {
-                self.setState({
-                    queryResults: response.data.drinks,
-                    currentDrink: []
+        this.setState({
+            loading: true
+        }, () => {
+            axios.post('http://spiritguide.us-west-2.elasticbeanstalk.com/findByCategory', {
+                    query: textQuery
+                })
+                .then(function (response) {
+                    self.setState({
+                        queryResults: response.data.drinks,
+                        currentDrink: [],
+                        loading: false
+                    });
+                })
+                .catch(function (error) {
+                    console.log(error);
                 });
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
+        });
     }
 
     letterQuery(event) {
@@ -173,16 +183,21 @@ class App extends React.Component {
         let self = this;
         let textQuery = event.currentTarget.textContent;
         textQuery = this.createQueryString(textQuery);
-        axios.post('http://localhost:5170/findByLetter', {query: textQuery})
-            .then(function (response) {
-                self.setState({
-                    queryResults: response.data.drinks,
-                    currentDrink: []
+        this.setState({
+            loading: true
+        }, () => {
+            axios.post('http://spiritguide.us-west-2.elasticbeanstalk.com/findByLetter', {query: textQuery})
+                .then(function (response) {
+                    self.setState({
+                        queryResults: response.data.drinks,
+                        currentDrink: [],
+                        loading: false
+                    });
+                })
+                .catch(function (error) {
+                    console.log(error);
                 });
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
+        });
     }
 
     glasswareQuery(event) {
@@ -190,18 +205,23 @@ class App extends React.Component {
         let self = this;
         let textQuery = event.currentTarget.textContent;
         textQuery = this.createQueryString(textQuery);
-        axios.post('http://localhost:5170/findByGlassware', {
-                query: textQuery
-            })
-            .then(function (response) {
-                self.setState({
-                    queryResults: response.data.drinks,
-                    currentDrink: []
+        this.setState({
+            loading: true
+        }, () => {
+            axios.post('http://spiritguide.us-west-2.elasticbeanstalk.com/findByGlassware', {
+                    query: textQuery
+                })
+                .then(function (response) {
+                    self.setState({
+                        queryResults: response.data.drinks,
+                        currentDrink: [],
+                        loading: false
+                    });
+                })
+                .catch(function (error) {
+                    console.log(error);
                 });
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
+        });
     }
 
     ingredientQuery(event) {
@@ -209,24 +229,30 @@ class App extends React.Component {
         let self = this;
         let textQuery = event.currentTarget.textContent;
         textQuery = this.createQueryString(textQuery);
-        axios.post('http://localhost:5170/findByIngredient', {
-                query: textQuery
-            })
-            .then(function (response) {
-                if (typeof (response.data.drinks) === 'string') {
-                    self.setState({
-                        queryResults: [{'strDrink': `No Drink Found: ${textQuery}`, 'strDrinkThumb': './img/sadgurl.jpg', 'idDrink': 'zero0'}]
-                    });
-                } else {
-                    self.setState({
-                        queryResults: response.data.drinks,
-                        currentDrink: []
-                    });
-                }
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
+        this.setState({
+            loading: true
+        }, () => {
+            axios.post('http://spiritguide.us-west-2.elasticbeanstalk.com/findByIngredient', {
+                    query: textQuery
+                })
+                .then(function (response) {
+                    if (typeof (response.data.drinks) === 'string') {
+                        self.setState({
+                            queryResults: [{'strDrink': `No Drink Found: ${textQuery}`, 'strDrinkThumb': './img/sadgurl.jpg', 'idDrink': 'zero0'}],
+                            loading: false
+                        });
+                    } else {
+                        self.setState({
+                            queryResults: response.data.drinks,
+                            currentDrink: [],
+                            loading: false
+                        });
+                    }
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        });
     }
 
     drinkIDQuery(event) {
@@ -234,27 +260,33 @@ class App extends React.Component {
         let oldQuery = this.state.queryResults;
         let self = this;
         let idQuery = event.currentTarget.id;
-        axios.post('http://localhost:5170/findByID', {
-                query: idQuery
-            })
-            .then(function (response) {
-                if (!response.data.drinks.length) {
-                    self.setState({
-                        currentDrink: [],
-                        queryResults: [],
-                        oldQuery: oldQuery
-                    });
-                } else {
-                    self.setState({
-                        currentDrink: response.data.drinks[0],
-                        queryResults: [],
-                        oldQuery: oldQuery
-                    });
-                }
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
+        this.setState({
+            loading: true
+        }, () => {
+            axios.post('http://spiritguide.us-west-2.elasticbeanstalk.com/findByID', {
+                    query: idQuery
+                })
+                .then(function (response) {
+                    if (!response.data.drinks.length) {
+                        self.setState({
+                            currentDrink: [],
+                            queryResults: [],
+                            oldQuery: oldQuery,
+                            loading: false
+                        });
+                    } else {
+                        self.setState({
+                            currentDrink: response.data.drinks[0],
+                            queryResults: [],
+                            oldQuery: oldQuery,
+                            loading: false
+                        });
+                    }
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        });
     }
 
     getNames() {
@@ -282,22 +314,28 @@ class App extends React.Component {
             });
         } else {
             let self = this;
-            axios.get('http://localhost:5170/getCategories')
-                .then(function (response) {
-                    self.setState({
-                        drinkCategories: response.data.drinks,
-                        currentDrink: [],
-                        queryResults: []
+            this.setState({
+                loading: true
+            }, () => {
+                axios.get('http://spiritguide.us-west-2.elasticbeanstalk.com/getCategories')
+                    .then(function (response) {
+                        self.setState({
+                            drinkCategories: response.data.drinks,
+                            currentDrink: [],
+                            queryResults: [],
+                            loading: false
+                        });
+                    })
+                    .then(() => {
+                        self.setState({
+                            dataFocus: this.state.drinkCategories,
+                            loading: false
+                        });
+                    })
+                    .catch(function (error) {
+                        console.log(error);
                     });
-                })
-                .then(() => {
-                    self.setState({
-                        dataFocus: this.state.drinkCategories
-                    });
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
+            });
         }
     }
 
@@ -310,22 +348,28 @@ class App extends React.Component {
             });
         } else {
             let self = this;
-            axios.get('http://localhost:5170/getIngredients')
-                .then(function (response) {
-                    self.setState({
-                        drinkIngredients: response.data.drinks,
-                        currentDrink: [],
-                        queryResults: []
+            this.setState({
+                loading: true
+            }, () => {
+                axios.get('http://spiritguide.us-west-2.elasticbeanstalk.com/getIngredients')
+                    .then(function (response) {
+                        self.setState({
+                            drinkIngredients: response.data.drinks,
+                            currentDrink: [],
+                            queryResults: [],
+                            loading: false
+                        });
+                    })
+                    .then(() => {
+                        self.setState({
+                            dataFocus: this.state.drinkIngredients,
+                            loading: false
+                        });
+                    })
+                    .catch(function (error) {
+                        console.log(error);
                     });
-                })
-                .then(() => {
-                    self.setState({
-                        dataFocus: this.state.drinkIngredients
-                    });
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
+            });
         }
     }
 
@@ -338,28 +382,34 @@ class App extends React.Component {
             });
         } else {
             let self = this;
-            axios.get('http://localhost:5170/getGlassware')
-                .then(function (response) {
-                    self.setState({
-                        drinkGlassware: response.data.drinks,
-                        currentDrink: [],
-                        queryResults: []
+            this.setState({
+                loading: true
+            }, () => {
+                axios.get('http://spiritguide.us-west-2.elasticbeanstalk.com/getGlassware')
+                    .then(function (response) {
+                        self.setState({
+                            drinkGlassware: response.data.drinks,
+                            currentDrink: [],
+                            queryResults: [],
+                            loading: false
+                        });
+                    })
+                    .then(() => {
+                        self.setState({
+                            dataFocus: this.state.drinkGlassware,
+                            loading: false
+                        });
+                    })
+                    .catch(function (error) {
+                        console.log(error);
                     });
-                })
-                .then(() => {
-                    self.setState({
-                        dataFocus: this.state.drinkGlassware
-                    });
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
+            });
         }
     }
 
-    paginatePrev(){
+    paginatePrev() {
         let pS = this.state.pageState;
-        if(pS > 1){
+        if (pS > 1) {
             pS--;
             this.setState({
                 pageState: pS
@@ -367,8 +417,8 @@ class App extends React.Component {
                 pS = this.state.pageState;
                 this.setState({
                     favSlice: this.state.favoriteDrinks.slice(((pS - 1) * 7), (pS * 7))
-                })
-            })
+                });
+            });
         }
     }
 
@@ -385,13 +435,13 @@ class App extends React.Component {
         });
     }
 
-    clearDrink(){
+    clearDrink() {
         let oldQuery = this.state.oldQuery;
         this.setState({
             currentDrink: [],
             queryResults: oldQuery,
             oldQuery: []
-        })
+        });
     }
 
     render() {
@@ -404,7 +454,7 @@ class App extends React.Component {
                             <div className={'nav-link'} id={'profile'}>
                                 <Link to="/">My Favorites</Link>
                             </div>
-                            <div className={'nav-link'} onClick={ () => { this.setState({ currentDrink:[] }); } }  id={'search'}>
+                            <div className={'nav-link'} onClick={() => { this.setState({currentDrink: []}); }} id={'search'}>
                                 <Link to="/search">Search Drink Recipes</Link>
                             </div>
                         </div>
@@ -435,6 +485,7 @@ class App extends React.Component {
                                          getIngredients={this.getIngredients}
                                          getNames={this.getNames}
                                          addFavorite={this.addFavorite}
+                                         loading={this.state.loading}
                                          queryResults={this.state.queryResults}
                                          currentDrink={this.state.currentDrink}
                                          drinkCategories={this.state.drinkCategories}
@@ -449,7 +500,8 @@ class App extends React.Component {
                     </Switch>
                     <div className={'footer'}>
                         <span className={'hire-me'}>SpiritGuide is a React application created with love by Kytra Murphree.  Kytra is currently looking for employment as a Front-end Web Developer.
-                                                    Recruiters and Hiring Managers may contact her at kytrascript@gmail.com or via <a href={'http://www.linkedin.com/in/kytrascript'}>LinkedIn</a>.</span>
+                                                    Recruiters and Hiring Managers may contact her at kytrascript@gmail.com or via <a
+                                href={'http://www.linkedin.com/in/kytrascript'}>LinkedIn</a>.</span>
                     </div>
                 </div>
             </HashRouter>
