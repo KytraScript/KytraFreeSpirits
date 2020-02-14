@@ -10,6 +10,16 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('./public'));
 
+app.get('/popular', async (req, res) => {
+    axios.get(`https://www.thecocktaildb.com/api/json/${API_KEY}/popular.php`)
+        .then( function (response) {
+            res.send(response.data)
+        })
+        .catch(function (error) {
+            console.log(error);
+        })
+});
+
 app.get('/drinkNames', async (req, res) => {
     let query = req.body.query;
     axios.get(`https://www.thecocktaildb.com/api/json/${API_KEY}/search.php?f=${query}`)

@@ -34,7 +34,7 @@ class SearchDisplay extends React.Component {
             return (
                 <div className={this.props.loading ? 'apiLoading' : 'data-points'}>
                     <div onClick={() => this.props.clearDrink()} title={'Back to Results'} id={'btn-return'}></div>
-                    <InstructionCard loading={this.props.loading} drink={this.props.currentDrink} addFavorite={this.props.addFavorite}/>
+                    <InstructionCard loading={this.props.loading} drink={this.props.currentDrink} favConfirm={this.props.favConfirm} addFavorite={this.props.addFavorite}/>
                 </div>
             );
         }

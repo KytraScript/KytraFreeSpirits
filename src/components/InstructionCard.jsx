@@ -45,7 +45,8 @@ const InstructionCard = (props) => {
                             return <Ingredients name={e} measure={allMeasurements[count]} key={index}/>;
                         })}
                     </div>
-                    <div id={'btn-add-fav'} onClick={() => props.addFavorite(props.drink.idDrink)}>Add To Favorites</div>
+                    <div id={props.favConfirm ? 'btn-already-fav' : 'btn-add-fav'} onClick={() => props.addFavorite(props.drink.idDrink)}>
+                        {props.favConfirm ? 'Saved!' : 'Add To Favorites'}</div>
                 </div>
             </div>
         </div>

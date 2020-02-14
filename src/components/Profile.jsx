@@ -14,7 +14,7 @@ const Profile = (props) => {
                     </div>
                     <div className={'drink-details-viewer'}>
                         <div className={'data-points'}>
-                            <InstructionCard drink={props.currentDrink} addFavorite={props.addFavorite}/>
+                            <InstructionCard drink={props.currentDrink} favConfirm={props.favConfirm} addFavorite={props.addFavorite}/>
                         </div>
                     </div>
                 </div>

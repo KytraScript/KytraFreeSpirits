@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Login from './components/Login.jsx';
 import Profile from './components/Profile.jsx';
-import Creator from './components/Creator.jsx';
+import Home from './components/Home.jsx';
 import DrinkSearch from './components/DrinkSearch.jsx';
 import axios from 'axios';
 import {BrowserRouter as Router, Route, Switch, useParams, Link, HashRouter} from 'react-router-dom';
@@ -26,7 +26,10 @@ class App extends React.Component {
             drinkGlassware: [],
             dataFocus: [],
             pageState: 1,
-            favSlice: []
+            favSlice: [],
+            favIDs: [],
+            popularDrinks: [],
+            isCurrentFav: false
         };
 
         this.addFavorite = this.addFavorite.bind(this);
@@ -46,25 +49,40 @@ class App extends React.Component {
         this.displayFavorite = this.displayFavorite.bind(this);
         this.removeFavorite = this.removeFavorite.bind(this);
         this.clearDrink = this.clearDrink.bind(this);
+        this.getPopular = this.getPopular.bind(this);
     }
 
     UNSAFE_componentWillMount() {
 
         let favDrinks = window.localStorage.getItem('favoriteDrinks');
+        let favIDs = this.state.favIDs;
         if (!favDrinks) {
             favDrinks = [];
         } else {
             favDrinks = JSON.parse(favDrinks);
         }
 
+        favDrinks.forEach( e => {
+            favIDs.push(e.idDrink);
+        });
+
         this.setState({
-            favoriteDrinks: favDrinks
+            favoriteDrinks: favDrinks,
+            favIDs: favIDs
         }, () => {
             let pS = this.state.pageState;
             this.setState({
                 favSlice: this.state.favoriteDrinks.slice(((pS - 1) * 7), (pS * 7))
             });
         });
+
+        axios.get('http://spiritguide.us-west-2.elasticbeanstalk.com/popular')
+            .then( response => {
+                this.setState({
+                    popularDrinks: response.data.drinks
+                })
+            })
+            .catch( err => console.log(err))
     }
 
     componentDidMount() {
@@ -75,6 +93,7 @@ class App extends React.Component {
 
         let newAddition = this.state.currentDrink;
         let favorites = this.state.favoriteDrinks;
+        let favIDs = this.state.favIDs;
         let alreadyFavorite = false;
 
         favorites.forEach(e => {
@@ -85,14 +104,17 @@ class App extends React.Component {
 
         if (!alreadyFavorite) {
             favorites.push(newAddition);
+            favIDs.push(newAddition.idDrink);
         }
 
         this.setState({
-            favoriteDrinks: favorites
+            favoriteDrinks: favorites,
+            favIDs: favIDs
         }, () => {
             let pS = this.state.pageState;
             this.setState({
-                favSlice: this.state.favoriteDrinks.slice(((pS - 1) * 7), (pS * 7))
+                favSlice: this.state.favoriteDrinks.slice(((pS - 1) * 7), (pS * 7)),
+                isCurrentFav: this.confirmFavorite()
             }, () => {
                 let favString = JSON.stringify(this.state.favoriteDrinks);
                 window.localStorage.setItem('favoriteDrinks', favString);
@@ -102,6 +124,7 @@ class App extends React.Component {
 
     removeFavorite(drinkID) {
         let favState = this.state.favoriteDrinks;
+        let favIDs = [];
 
         for (let i = 0; i < favState.length; i++) {
             if (favState[i].idDrink === drinkID) {
@@ -109,12 +132,18 @@ class App extends React.Component {
             }
         }
 
+        favState.forEach( e => {
+            favIDs.push(e.idDrink);
+        });
+
         this.setState({
-            favoriteDrinks: favState
+            favoriteDrinks: favState,
+            favIDs: favIDs
         }, () => {
             let pS = this.state.pageState;
             this.setState({
-                favSlice: this.state.favoriteDrinks.slice(((pS - 1) * 7), (pS * 7))
+                favSlice: this.state.favoriteDrinks.slice(((pS - 1) * 7), (pS * 7)),
+                isCurrentFav: this.confirmFavorite()
             }, () => {
                 let favString = JSON.stringify(this.state.favoriteDrinks);
                 window.localStorage.setItem('favoriteDrinks', favString);
@@ -129,6 +158,10 @@ class App extends React.Component {
                 let drink = fav[i];
                 this.setState({
                     currentDrink: drink
+                }, () => {
+                    this.setState({
+                        isCurrentFav: this.confirmFavorite()
+                    })
                 });
             }
         }
@@ -168,6 +201,7 @@ class App extends React.Component {
                 .then(function (response) {
                     self.setState({
                         queryResults: response.data.drinks,
+                        isCurrentFav: self.confirmFavorite(),
                         currentDrink: [],
                         loading: false
                     });
@@ -190,6 +224,7 @@ class App extends React.Component {
                 .then(function (response) {
                     self.setState({
                         queryResults: response.data.drinks,
+                        isCurrentFav: self.confirmFavorite(),
                         currentDrink: [],
                         loading: false
                     });
@@ -214,6 +249,7 @@ class App extends React.Component {
                 .then(function (response) {
                     self.setState({
                         queryResults: response.data.drinks,
+                        isCurrentFav: self.confirmFavorite(),
                         currentDrink: [],
                         loading: false
                     });
@@ -244,6 +280,7 @@ class App extends React.Component {
                     } else {
                         self.setState({
                             queryResults: response.data.drinks,
+                            isCurrentFav: self.confirmFavorite(),
                             currentDrink: [],
                             loading: false
                         });
@@ -271,12 +308,14 @@ class App extends React.Component {
                         self.setState({
                             currentDrink: [],
                             queryResults: [],
+                            isCurrentFav: self.confirmFavorite(),
                             oldQuery: oldQuery,
                             loading: false
                         });
                     } else {
                         self.setState({
                             currentDrink: response.data.drinks[0],
+                            isCurrentFav: self.confirmFavorite(),
                             queryResults: [],
                             oldQuery: oldQuery,
                             loading: false
@@ -300,6 +339,7 @@ class App extends React.Component {
         });
         this.setState({
             dataFocus: alphaArr,
+            isCurrentFav: this.confirmFavorite(),
             currentDrink: [],
             queryResults: []
         });
@@ -309,6 +349,7 @@ class App extends React.Component {
         if (this.state.drinkCategories.length) {
             this.setState({
                 dataFocus: this.state.drinkCategories,
+                isCurrentFav: this.confirmFavorite(),
                 currentDrink: [],
                 queryResults: []
             });
@@ -321,6 +362,7 @@ class App extends React.Component {
                     .then(function (response) {
                         self.setState({
                             drinkCategories: response.data.drinks,
+                            isCurrentFav: self.confirmFavorite(),
                             currentDrink: [],
                             queryResults: [],
                             loading: false
@@ -343,6 +385,7 @@ class App extends React.Component {
         if (this.state.drinkIngredients.length) {
             this.setState({
                 dataFocus: this.state.drinkIngredients,
+                isCurrentFav: this.confirmFavorite(),
                 currentDrink: [],
                 queryResults: []
             });
@@ -355,6 +398,7 @@ class App extends React.Component {
                     .then(function (response) {
                         self.setState({
                             drinkIngredients: response.data.drinks,
+                            isCurrentFav: self.confirmFavorite(),
                             currentDrink: [],
                             queryResults: [],
                             loading: false
@@ -377,6 +421,7 @@ class App extends React.Component {
         if (this.state.drinkGlassware.length) {
             this.setState({
                 dataFocus: this.state.drinkGlassware,
+                isCurrentFav: this.confirmFavorite(),
                 currentDrink: [],
                 queryResults: []
             });
@@ -389,6 +434,7 @@ class App extends React.Component {
                     .then(function (response) {
                         self.setState({
                             drinkGlassware: response.data.drinks,
+                            isCurrentFav: self.confirmFavorite(),
                             currentDrink: [],
                             queryResults: [],
                             loading: false
@@ -406,6 +452,16 @@ class App extends React.Component {
             });
         }
     }
+
+    getPopular() {
+        let popular = this.state.popularDrinks;
+        this.setState({
+            currentDrink: [],
+            queryResults: popular,
+            oldQuery: popular
+        })
+    }
+
 
     paginatePrev() {
         let pS = this.state.pageState;
@@ -439,9 +495,14 @@ class App extends React.Component {
         let oldQuery = this.state.oldQuery;
         this.setState({
             currentDrink: [],
+            isCurrentFav: this.confirmFavorite(),
             queryResults: oldQuery,
             oldQuery: []
         });
+    }
+
+    confirmFavorite(){
+        return this.state.favIDs.includes(this.state.currentDrink.idDrink);
     }
 
     render() {
@@ -451,8 +512,11 @@ class App extends React.Component {
                     <div className={'nav-top'}>
                         <div className={'nav-title'}>Spirit Guide</div>
                         <div className={'nav-menu'}>
+                            <div className={'nav-link'} id={'home'}>
+                                <Link to="/">Home</Link>
+                            </div>
                             <div className={'nav-link'} id={'profile'}>
-                                <Link to="/">My Favorites</Link>
+                                <Link to="/saved">Saved Drinks</Link>
                             </div>
                             <div className={'nav-link'} onClick={() => { this.setState({currentDrink: []}); }} id={'search'}>
                                 <Link to="/search">Search Drink Recipes</Link>
@@ -461,7 +525,14 @@ class App extends React.Component {
                     </div>
                     <Switch>
                         <Route exact path="/">
+                            <Home popular={this.state.popularDrinks}
+                                  drinkIDQuery={this.drinkIDQuery}
+                                  loading={this.state.loading}
+                                  favorites={this.state.favoriteDrinks}/>
+                        </Route>
+                        <Route exact path="/saved">
                             <Profile createdDrinks={this.state.userCreatedDrinks}
+                                     favConfirm={this.state.isCurrentFav}
                                      pageState={this.state.pageState}
                                      favSlice={this.state.favSlice}
                                      paginatePrev={this.paginatePrev}
@@ -475,6 +546,7 @@ class App extends React.Component {
                         </Route>
                         <Route path="/search">
                             <DrinkSearch createQueryString={this.createQueryString}
+                                         favConfirm={this.state.isCurrentFav}
                                          categoryQuery={this.categoryQuery}
                                          glasswareQuery={this.glasswareQuery}
                                          letterQuery={this.letterQuery}
@@ -494,6 +566,7 @@ class App extends React.Component {
                                          drinkGlassware={this.state.drinkGlassware}
                                          dataFocus={this.state.dataFocus}
                                          clearDrink={this.clearDrink}
+                                         getPopular={this.getPopular}
 
                             />
                         </Route>

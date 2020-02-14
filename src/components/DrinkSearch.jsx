@@ -33,9 +33,14 @@ class DrinkSearch extends React.Component {
                                 <div id={'btn-by-glassware'}></div>
                                 <div className={'search-option-name'}>By Glassware</div>
                             </div>
+                            <div className={'search-option'} onClick={this.props.getPopular}>
+                                <div id={'btn-by-popular'}></div>
+                                <div className={'search-option-name'}>Popular Searches</div>
+                            </div>
                         </div>
                         <div className={this.props.loading ? 'whiteBck drink-details-viewer' : 'drink-details-viewer'}>
                             <SearchDisplay dataFocus={this.props.dataFocus}
+                                           favConfirm={this.props.favConfirm}
                                            loading={this.props.loading}
                                            glasswareQuery={this.props.glasswareQuery}
                                            categoryQuery={this.props.categoryQuery}

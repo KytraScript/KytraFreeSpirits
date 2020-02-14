@@ -54,6 +54,7 @@ body {
 
 .nav-menu a{
     text-decoration: none;
+    color: black;
 }
 
 .nav-title{
@@ -62,6 +63,10 @@ body {
     margin-left: 20px;
     color: black;
     text-shadow: 2px 2px 1px #de5d83;
+}
+
+#home a:hover, #profile a:hover, #search a:hover{
+    color: #058db9;
 }
 
 .main{
@@ -315,7 +320,8 @@ body {
     background-color: white;
     border-radius: 2px;
     text-wrap: normal;
-    margin-left: 20px;
+    margin-left: 10px;
+    margin-right: 10px;
     margin-top: 30px;
     height: 256px;
     width: 200px;
@@ -367,6 +373,7 @@ body {
     font-size: 24px;
     font-weight: bold;
     margin-bottom: 20px;
+    margin-top: 10px;
 }
 
 .instruction-thumb img{
@@ -526,6 +533,15 @@ body {
     background-repeat: no-repeat;
 }
 
+#btn-by-popular{
+    background-image: url('./img/png/031-cocktails-9.png');
+    height: 32px;
+    width: 32px;
+    margin-left: 20px;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
 #btn-by-ingredients{
     background-image: url('./img/png/035-cocktails-5.png');
     height: 32px;
@@ -553,6 +569,25 @@ body {
     transform: scale(1.02);
     box-shadow: 0 0 1px black;
     cursor: pointer;
+}
+
+#btn-already-fav{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    font-weight: bold;
+    margin-bottom: 30px;
+    width: 200px;
+    height: 30px;
+    background-color: #05c1fd;
+    color: black;
+    border: 1px solid black;
+    border-radius: 3px;
+}
+
+#btn-already-fav:hover{
+    transform: scale(1.02);
+    box-shadow: 0 0 1px black;
 }
 
 #btn-remove-fav{
@@ -606,7 +641,7 @@ body {
     height: 32px;
     width: 32px;
     position: absolute;
-    top: 20px;
+    top: 26px;
     left: 86px;
     z-index: 150;
     background-size: contain;
@@ -639,5 +674,34 @@ body {
 .whiteBck{
     background-color: white;
 }
+
+.confirmed{
+    font-size: 30px;
+    color: black;
+    position: absolute;
+    text-shadow: 1px 1px 2px #de5d83;
+    top: 20px;
+    left: 50vw;
+    z-index: 251;
+}
+
+.landing-page{
+    display: flex;
+    flex-direction: column;
+    width: 88%;
+    font-size: 1.3em;
+    color: white;
+    align-items: center;
+    justify-content: space-around;
+    text-align: center;
+    word-break: break-word;
+}
+
+.landing-page h1, .landing-page h3{
+    color: black;
+    margin-top: 4px;
+    margin-bottom: 2px;
+}
+
 
 
